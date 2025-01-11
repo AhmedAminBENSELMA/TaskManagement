@@ -27,9 +27,9 @@ pipeline {
             steps {
                 script {
                     echo 'Building server image...'
-                    dir('server') {
-                        dockerImageServer = docker.build("${IMAGE_NAME_SERVER}")
-                    }
+                    sh """
+                        docker build -t ${IMAGE_NAME_SERVER} ./server
+                    """
                 }
             }
         }
@@ -38,9 +38,9 @@ pipeline {
             steps {
                 script {
                     echo 'Building client image...'
-                    dir('client') {
-                        dockerImageClient = docker.build("${IMAGE_NAME_CLIENT}")
-                    }
+                    sh """
+                        docker build -t ${IMAGE_NAME_CLIENT} ./client
+                    """
                 }
             }
         }
@@ -78,9 +78,11 @@ pipeline {
                 script {
                     echo 'Pushing images to Docker Hub...'
                     withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        sh "docker login -u ${USERNAME} -p ${PASSWORD}"
-                        dockerImageServer.push('latest') // Push server image with 'latest' tag
-                        dockerImageClient.push('latest') // Push client image with 'latest' tag
+                        sh """
+                            echo "${PASSWORD}" | docker login -u "${USERNAME}" --password-stdin
+                            docker push ${IMAGE_NAME_SERVER}:latest
+                            docker push ${IMAGE_NAME_CLIENT}:latest
+                        """
                     }
                 }
             }
