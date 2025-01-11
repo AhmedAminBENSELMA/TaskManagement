@@ -7,8 +7,8 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') // Jenkins credentials ID for Docker Hub
-        IMAGE_NAME_SERVER = '[ahmedamin]/mern-server' // Replace '[username]' with your Docker Hub username
-        IMAGE_NAME_CLIENT = '[ahmedamin]/mern-client' // Replace '[username]' with your Docker Hub username
+        IMAGE_NAME_SERVER = '[ahmedaminebenselma]/mern-server' // Replace '[username]' with your Docker Hub username
+        IMAGE_NAME_CLIENT = '[ahmedaminebenselma]/mern-client' // Replace '[username]' with your Docker Hub username
     }
 
     stages {
@@ -18,7 +18,7 @@ pipeline {
                     echo 'Starting Git checkout...'
                     git branch: 'main',
                         url: 'https://github.com/AhmedAminBENSELMA/TaskManagement.git',
-                        credentialsId: 'git' // Jenkins credentials ID for GitLab SSH key
+                        credentialsId: 'github' // Jenkins credentials ID for GitLab SSH key
                 }
             }
         }
@@ -50,9 +50,9 @@ pipeline {
                 script {
                     echo 'Scanning server image...'
                     sh """
-                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \\
-                            aquasec/trivy:latest image --exit-code 0 \\
-                            --severity LOW,MEDIUM,HIGH,CRITICAL \\
+                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+                            aquasec/trivy:latest image --exit-code 0 \
+                            --severity LOW,MEDIUM,HIGH,CRITICAL \
                             ${IMAGE_NAME_SERVER}
                     """
                 }
@@ -64,9 +64,9 @@ pipeline {
                 script {
                     echo 'Scanning client image...'
                     sh """
-                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \\
-                            aquasec/trivy:latest image --exit-code 0 \\
-                            --severity LOW,MEDIUM,HIGH,CRITICAL \\
+                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+                            aquasec/trivy:latest image --exit-code 0 \
+                            --severity LOW,MEDIUM,HIGH,CRITICAL \
                             ${IMAGE_NAME_CLIENT}
                     """
                 }
