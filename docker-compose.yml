@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    networks:
+      - mern-network
+    restart: always
+
+  server:
+    build:
+      context: ./server
+    container_name: server
+    networks:
+      - mern-network
+    ports:
+      - "5000:5000"
+    environment:
+      MONGO_URI: "mongodb://mongodb:27017/TasckManagement"
+    depends_on:
+      - mongodb
+    restart: always
+
+  client:
+    build:
+      context: ./client
+    container_name: client
+    networks:
+      - mern-network
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+    restart: always
+
+networks:
+  mern-network:
+    driver: bridge
