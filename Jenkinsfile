@@ -87,4 +87,3 @@ pipeline {
         }
     }
 }
->>>>>>> 19ab958 (add jenkinsFile)
